@@ -73,6 +73,28 @@ export default function RootLayout({
     <html lang="en" className={`${inter.variable} ${playfair.variable}`}>
       <head>
         <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes" />
+        {/* EmailJS for automatic email sending */}
+        <script
+          type="text/javascript"
+          src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"
+          async
+        />
+        <script
+          type="text/javascript"
+          dangerouslySetInnerHTML={{
+            __html: `
+              (function() {
+                if (typeof window !== 'undefined') {
+                  window.addEventListener('load', function() {
+                    if (window.emailjs) {
+                      window.emailjs.init('YOUR_PUBLIC_KEY_HERE'); // Replace with your EmailJS Public Key
+                    }
+                  });
+                }
+              })();
+            `,
+          }}
+        />
       </head>
       <body>{children}</body>
     </html>

@@ -43,6 +43,8 @@ const TIME_SLOTS = [
 export default function BookingModal({ isOpen, onClose }: BookingModalProps) {
   const [formData, setFormData] = useState({
     name: '',
+    email: '',
+    phone: '',
     day: 'Saturday',
     time: '',
     services: [] as string[],
@@ -66,40 +68,186 @@ export default function BookingModal({ isOpen, onClose }: BookingModalProps) {
     setSubmitStatus('idle');
 
     try {
-      // Format email body as a structured table
-      const emailBody = `
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-                    NEW BOOKING REQUEST - OYATZ HAIR
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-┌─────────────────────────────────────────────────────────────────────────────┐
-│ FIELD                          │ VALUE                                      │
-├─────────────────────────────────────────────────────────────────────────────┤
-│ Name                           │ ${formData.name}                           │
-├─────────────────────────────────────────────────────────────────────────────┤
-│ Preferred Day                  │ ${formData.day}                            │
-├─────────────────────────────────────────────────────────────────────────────┤
-│ Preferred Time                 │ ${formData.time || 'Not specified'}       │
-├─────────────────────────────────────────────────────────────────────────────┤
-│ Services Requested             │ ${formData.services.length > 0 ? formData.services.join(', ') : 'None selected'} │
-├─────────────────────────────────────────────────────────────────────────────┤
-│ Additional Information         │ ${formData.extraInfo || 'None provided'}  │
-└─────────────────────────────────────────────────────────────────────────────┘
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+      // Format email body as HTML table for better formatting
+      const emailBodyHTML = `
+        <html>
+          <head>
+            <style>
+              body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+              .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+              h2 { color: #a47864; border-bottom: 2px solid #a47864; padding-bottom: 10px; }
+              table { width: 100%; border-collapse: collapse; margin: 20px 0; }
+              th, td { border: 1px solid #ddd; padding: 12px; text-align: left; }
+              th { background-color: #a47864; color: white; font-weight: bold; }
+              tr:nth-child(even) { background-color: #f5f0ed; }
+              .footer { margin-top: 30px; padding-top: 20px; border-top: 1px solid #ddd; font-size: 12px; color: #666; }
+            </style>
+          </head>
+          <body>
+            <div class="container">
+              <h2>New Booking Request - OYATZ Hair</h2>
+              <table>
+                <tr>
+                  <th>Field</th>
+                  <th>Value</th>
+                </tr>
+                <tr>
+                  <td><strong>Name</strong></td>
+                  <td>${formData.name}</td>
+                </tr>
+                <tr>
+                  <td><strong>Email</strong></td>
+                  <td>${formData.email || 'Not provided'}</td>
+                </tr>
+                <tr>
+                  <td><strong>Phone</strong></td>
+                  <td>${formData.phone || 'Not provided'}</td>
+                </tr>
+                <tr>
+                  <td><strong>Preferred Day</strong></td>
+                  <td>${formData.day}</td>
+                </tr>
+                <tr>
+                  <td><strong>Preferred Time</strong></td>
+                  <td>${formData.time || 'Not specified'}</td>
+                </tr>
+                <tr>
+                  <td><strong>Services Requested</strong></td>
+                  <td>${formData.services.length > 0 ? formData.services.join(', ') : 'None selected'}</td>
+                </tr>
+                <tr>
+                  <td><strong>Additional Information</strong></td>
+                  <td>${formData.extraInfo || 'None provided'}</td>
+                </tr>
+              </table>
+              <div class="footer">
+                <p>This booking request was submitted from the OYATZ Hair website.</p>
+                <p>Please respond to confirm the appointment.</p>
+              </div>
+            </div>
+          </body>
+        </html>
       `;
 
-      // Use mailto (works without backend)
-      const subject = encodeURIComponent('New Booking Request from OYATZ Hair Website');
-      const body = encodeURIComponent(emailBody);
+      // Plain text version for email clients that don't support HTML
+      const emailBodyText = `
+NEW BOOKING REQUEST - OYATZ HAIR
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-      window.location.href = `mailto:ainababs0@gmail.com?subject=${subject}&body=${body}`;
+Name: ${formData.name}
+Email: ${formData.email || 'Not provided'}
+Phone: ${formData.phone || 'Not provided'}
+Preferred Day: ${formData.day}
+Preferred Time: ${formData.time || 'Not specified'}
+Services Requested: ${formData.services.length > 0 ? formData.services.join(', ') : 'None selected'}
+Additional Information: ${formData.extraInfo || 'None provided'}
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+This booking request was submitted from the OYATZ Hair website.
+Please respond to confirm the appointment.
+      `;
+
+      // Confirmation email for the customer
+      const confirmationEmailHTML = `
+        <html>
+          <head>
+            <style>
+              body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+              .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+              h2 { color: #a47864; border-bottom: 2px solid #a47864; padding-bottom: 10px; }
+              .message { background-color: #f5f0ed; padding: 20px; border-radius: 8px; margin: 20px 0; }
+              .details { margin: 20px 0; }
+              .footer { margin-top: 30px; padding-top: 20px; border-top: 1px solid #ddd; font-size: 12px; color: #666; }
+            </style>
+          </head>
+          <body>
+            <div class="container">
+              <h2>Booking Request Received - OYATZ Hair</h2>
+              <div class="message">
+                <p>Thank you, <strong>${formData.name}</strong>!</p>
+                <p>We have received your booking request and will get back to you shortly to confirm your appointment.</p>
+              </div>
+              <div class="details">
+                <h3>Your Booking Details:</h3>
+                <p><strong>Preferred Day:</strong> ${formData.day}</p>
+                <p><strong>Preferred Time:</strong> ${formData.time || 'Not specified'}</p>
+                <p><strong>Services Requested:</strong> ${formData.services.length > 0 ? formData.services.join(', ') : 'None selected'}</p>
+                ${formData.extraInfo ? `<p><strong>Additional Information:</strong> ${formData.extraInfo}</p>` : ''}
+              </div>
+              <div class="footer">
+                <p>We will contact you soon to confirm your appointment.</p>
+                <p>If you have any questions, please don't hesitate to reach out.</p>
+                <p>Best regards,<br>OYATZ Hair</p>
+              </div>
+            </div>
+          </body>
+        </html>
+      `;
+
+      // Try to use EmailJS if available, otherwise fallback to mailto
+      if (typeof window !== 'undefined' && (window as any).emailjs) {
+        try {
+          const emailjs = (window as any).emailjs;
+          
+          // Send email to business owner
+          await emailjs.send(
+            process.env.NEXT_PUBLIC_EMAILJS_SERVICE_ID || 'service_oyatz',
+            process.env.NEXT_PUBLIC_EMAILJS_BOOKING_TEMPLATE_ID || 'template_booking',
+            {
+              to_email: 'ainababs0@gmail.com',
+              to_name: 'OYATZ Hair',
+              from_name: formData.name,
+              from_email: formData.email || 'noreply@oyatz.com',
+              phone: formData.phone || 'Not provided',
+              day: formData.day,
+              time: formData.time || 'Not specified',
+              services: formData.services.join(', ') || 'None selected',
+              extra_info: formData.extraInfo || 'None provided',
+              message_html: emailBodyHTML,
+              message_text: emailBodyText,
+            }
+          );
+
+          // Send confirmation email to customer
+          if (formData.email) {
+            await emailjs.send(
+              process.env.NEXT_PUBLIC_EMAILJS_SERVICE_ID || 'service_oyatz',
+              process.env.NEXT_PUBLIC_EMAILJS_CONFIRMATION_TEMPLATE_ID || 'template_confirmation',
+              {
+                to_email: formData.email,
+                to_name: formData.name,
+                customer_name: formData.name,
+                day: formData.day,
+                time: formData.time || 'Not specified',
+                services: formData.services.join(', ') || 'None selected',
+                message_html: confirmationEmailHTML,
+              }
+            );
+          }
+
+          setSubmitStatus('success');
+        } catch (emailError) {
+          console.error('EmailJS error:', emailError);
+          // Fallback to mailto if EmailJS fails
+          const subject = encodeURIComponent('New Booking Request from OYATZ Hair Website');
+          const body = encodeURIComponent(emailBodyText);
+          window.location.href = `mailto:ainababs0@gmail.com?subject=${subject}&body=${body}`;
+          setSubmitStatus('success');
+        }
+      } else {
+        // Fallback to mailto if EmailJS is not set up
+        const subject = encodeURIComponent('New Booking Request from OYATZ Hair Website');
+        const body = encodeURIComponent(emailBodyText);
+        window.location.href = `mailto:ainababs0@gmail.com?subject=${subject}&body=${body}`;
+        setSubmitStatus('success');
+      }
       
-      setSubmitStatus('success');
       setTimeout(() => {
         onClose();
         setFormData({
           name: '',
+          email: '',
+          phone: '',
           day: 'Saturday',
           time: '',
           services: [],
@@ -188,11 +336,51 @@ export default function BookingModal({ isOpen, onClose }: BookingModalProps) {
                   />
                 </motion.div>
 
-                {/* Day Selection */}
+                {/* Email Input */}
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.25 }}
+                >
+                  <label className="block text-white/90 font-semibold mb-2">
+                    Email Address *
+                  </label>
+                  <input
+                    type="email"
+                    required
+                    value={formData.email}
+                    onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))}
+                    className="w-full px-4 py-3 rounded-xl bg-white/10 backdrop-blur-sm border border-white/20 text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-white/50 focus:border-transparent transition-all"
+                    placeholder="your.email@example.com"
+                  />
+                  <p className="mt-1 text-xs text-white/70">We&apos;ll send a confirmation email to this address</p>
+                </motion.div>
+
+                {/* Phone Input */}
                 <motion.div
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.3 }}
+                >
+                  <label className="block text-white/90 font-semibold mb-2">
+                    Phone Number *
+                  </label>
+                  <input
+                    type="tel"
+                    required
+                    value={formData.phone}
+                    onChange={(e) => setFormData(prev => ({ ...prev, phone: e.target.value }))}
+                    className="w-full px-4 py-3 rounded-xl bg-white/10 backdrop-blur-sm border border-white/20 text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-white/50 focus:border-transparent transition-all"
+                    placeholder="(123) 456-7890"
+                  />
+                  <p className="mt-1 text-xs text-white/70">We&apos;ll call or text to confirm your appointment</p>
+                </motion.div>
+
+                {/* Day Selection */}
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.35 }}
                 >
                   <label className="block text-white/90 font-semibold mb-3">
                     Preferred Day *
@@ -245,7 +433,7 @@ export default function BookingModal({ isOpen, onClose }: BookingModalProps) {
                 <motion.div
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.5 }}
+                  transition={{ delay: 0.45 }}
                 >
                   <label className="block text-white/90 font-semibold mb-3">
                     Services Needed *
@@ -274,7 +462,7 @@ export default function BookingModal({ isOpen, onClose }: BookingModalProps) {
                 <motion.div
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.6 }}
+                  transition={{ delay: 0.5 }}
                 >
                   <label className="block text-white/90 font-semibold mb-2">
                     Additional Information
@@ -292,7 +480,7 @@ export default function BookingModal({ isOpen, onClose }: BookingModalProps) {
                 <motion.div
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.7 }}
+                  transition={{ delay: 0.55 }}
                   className="pt-4"
                 >
                   <motion.button
