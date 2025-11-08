@@ -1,8 +1,7 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
-import { motion, useMotionValue, useSpring, useTransform } from 'framer-motion';
-import Link from 'next/link';
+import { motion, useMotionValue, useSpring } from 'framer-motion';
 
 interface MagneticButtonProps {
   href?: string;
@@ -19,7 +18,8 @@ export default function MagneticButton({
   variant = 'primary',
   className = '',
 }: MagneticButtonProps) {
-  const ref = useRef<HTMLAnchorElement | HTMLButtonElement>(null);
+  const anchorRef = useRef<HTMLAnchorElement>(null);
+  const buttonRef = useRef<HTMLButtonElement>(null);
   const x = useMotionValue(0);
   const y = useMotionValue(0);
   const [isHovered, setIsHovered] = useState(false);
@@ -30,9 +30,10 @@ export default function MagneticButton({
 
   useEffect(() => {
     const handleMouseMove = (e: Event) => {
-      if (!ref.current || !isHovered) return;
+      const currentRef = href ? anchorRef.current : buttonRef.current;
+      if (!currentRef || !isHovered) return;
       const mouseEvent = e as MouseEvent;
-      const rect = ref.current.getBoundingClientRect();
+      const rect = currentRef.getBoundingClientRect();
       const centerX = rect.left + rect.width / 2;
       const centerY = rect.top + rect.height / 2;
       const distanceX = mouseEvent.clientX - centerX;
@@ -47,7 +48,7 @@ export default function MagneticButton({
       setIsHovered(false);
     };
 
-    const element = ref.current;
+    const element = href ? anchorRef.current : buttonRef.current;
     if (element) {
       element.addEventListener('mousemove', handleMouseMove);
       element.addEventListener('mouseleave', handleMouseLeave);
@@ -60,7 +61,7 @@ export default function MagneticButton({
         element.removeEventListener('mouseleave', handleMouseLeave);
       }
     };
-  }, [x, y, isHovered]);
+  }, [x, y, isHovered, href]);
 
   const variants = {
     primary: 'px-6 sm:px-8 md:px-10 lg:px-12 py-3 sm:py-4 md:py-5 text-sm sm:text-base md:text-lg bg-white text-brand-600 font-semibold rounded-full shadow-2xl hover:shadow-[0_25px_60px_-12px_rgba(164,120,100,0.4)] transition-shadow min-h-[44px] sm:min-h-[48px] md:min-h-[52px]',
@@ -68,8 +69,7 @@ export default function MagneticButton({
     glass: 'px-6 sm:px-8 md:px-10 lg:px-12 py-3 sm:py-4 md:py-5 text-sm sm:text-base md:text-lg bg-white/70 backdrop-blur-xl border border-white/50 text-brand-600 font-semibold rounded-full shadow-xl hover:bg-white/90 transition-all min-h-[44px] sm:min-h-[48px] md:min-h-[52px]',
   };
 
-  const baseProps = {
-    ref,
+  const commonProps = {
     className: `${variants[variant]} ${className}`,
     style: {
       x: xSpring,
@@ -91,14 +91,14 @@ export default function MagneticButton({
 
   if (href) {
     return (
-      <motion.a href={href} {...baseProps}>
+      <motion.a href={href} ref={anchorRef} {...commonProps}>
         {children}
       </motion.a>
     );
   }
 
   return (
-    <motion.button onClick={onClick} {...baseProps}>
+    <motion.button onClick={onClick} ref={buttonRef} {...commonProps}>
       {children}
     </motion.button>
   );
