@@ -30,6 +30,7 @@ import CTABand from '@/components/CTABand';
 import LocationSection from '@/components/LocationSection';
 import { generateColorTokensJSON } from '@/lib/palette';
 import { story, gallery, booking, faq } from '@/lib/copy';
+import { ASSETS, getAssetPath as getAssetPathUtil } from '@/lib/assets';
 
 // Gallery images using downloaded Pexels assets
 const galleryImages = [
@@ -102,7 +103,7 @@ const galleryImages = [
 
 export default function Home() {
   const [basePath, setBasePath] = useState('');
-  const [videoPath, setVideoPath] = useState('/assets/7507183-hd_1920_1080_25fps.mp4');
+  const [videoPath, setVideoPath] = useState<string>(ASSETS.backgroundVideo);
   const videoRef = useRef<HTMLVideoElement>(null);
 
   useEffect(() => {
@@ -110,7 +111,7 @@ export default function Home() {
     const pathname = window.location.pathname;
     const detectedBasePath = pathname.startsWith('/oyatz') ? '/oyatz' : '';
     setBasePath(detectedBasePath);
-    const newVideoPath = detectedBasePath ? `${detectedBasePath}/assets/7507183-hd_1920_1080_25fps.mp4` : '/assets/7507183-hd_1920_1080_25fps.mp4';
+    const newVideoPath = getAssetPathUtil(ASSETS.backgroundVideo, detectedBasePath);
     setVideoPath(newVideoPath);
     
     // Update video source directly
@@ -225,11 +226,11 @@ export default function Home() {
             transition={{ duration: 0.8, delay: 0.2, ease: [0.25, 0.46, 0.45, 0.94] }}
             className="relative aspect-[4/3] rounded-[20px] sm:rounded-[24px] md:rounded-[28px] lg:rounded-[32px] overflow-hidden shadow-apple-xl group mt-8 md:mt-0"
           >
-            <ParallaxImage
-              src={basePath ? `${basePath}/assets/pexels-cottonbro-5052869.jpg` : "/assets/pexels-cottonbro-5052869.jpg"}
-              alt="Professional hairstylist working in modern salon setting"
-              speed={0.15}
-            />
+                <ParallaxImage
+                  src={getAssetPathUtil(ASSETS.storyImage, basePath)}
+                  alt="Professional hairstylist working in modern salon setting"
+                  speed={0.15}
+                />
             <motion.div
               className="absolute inset-0 bg-gradient-to-t from-black/40 via-black/10 to-transparent"
               initial={{ opacity: 1 }}
