@@ -122,11 +122,12 @@ export default function LocationSection() {
                   initial={{ opacity: 0, scale: 0 }}
                   whileInView={{ opacity: 1, scale: 1 }}
                   viewport={{ once: true }}
-                  transition={{ delay: 0.7, ...transitions.spring }}
                   animate={!prefersReducedMotion() ? {
                     scale: [1, 1.2, 1],
                   } : {}}
                   transition={{
+                    ...transitions.spring,
+                    delay: 0.7,
                     scale: {
                       duration: 2,
                       repeat: Infinity,

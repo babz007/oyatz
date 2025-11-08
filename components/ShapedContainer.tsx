@@ -46,10 +46,6 @@ export default function ShapedContainer({
       initial={{ opacity: 0, y: 30 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
-      transition={{
-        duration: 0.8,
-        ease: [0.25, 0.46, 0.45, 0.94],
-      }}
       whileHover={
         variant === 'hover-lift'
           ? {
@@ -68,6 +64,7 @@ export default function ShapedContainer({
         type: 'spring',
         stiffness: 300,
         damping: 30,
+        duration: 0.8,
       }}
     >
       {variant === 'liquid-glass' && (

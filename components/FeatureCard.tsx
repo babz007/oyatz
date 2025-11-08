@@ -76,10 +76,6 @@ export default function FeatureCard({
       initial={{ opacity: 0, y: 40, scale: 0.95 }}
       whileInView={{ opacity: 1, y: 0, scale: 1 }}
       viewport={{ once: true, margin: '-50px' }}
-      transition={{
-        ...transitions.smooth,
-        delay: index * 0.1,
-      }}
       whileHover={
         !prefersReducedMotion()
           ? {
@@ -94,7 +90,10 @@ export default function FeatureCard({
         rotateY,
         transformStyle: 'preserve-3d',
       }}
-      transition={transitions.spring}
+      transition={{
+        ...transitions.spring,
+        delay: index * 0.1,
+      }}
     >
       {/* Liquid glass highlight */}
       {!prefersReducedMotion() && (

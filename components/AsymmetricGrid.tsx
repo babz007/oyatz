@@ -47,11 +47,6 @@ export default function AsymmetricGrid({
             initial={{ opacity: 0, y: 30, scale: 0.95 }}
             whileInView={{ opacity: 1, y: 0, scale: 1 }}
             viewport={{ once: true, margin: '-50px' }}
-            transition={{
-              duration: 0.6,
-              delay: index * 0.1,
-              ease: [0.25, 0.46, 0.45, 0.94],
-            }}
             onHoverStart={() => setHoveredId(item.id)}
             onHoverEnd={() => setHoveredId(null)}
             whileHover={{
@@ -63,6 +58,8 @@ export default function AsymmetricGrid({
               type: 'spring',
               stiffness: 300,
               damping: 30,
+              duration: 0.6,
+              delay: index * 0.1,
             }}
           >
             {/* Liquid glass effect on hover */}

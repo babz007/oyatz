@@ -72,7 +72,6 @@ export default function LiquidGlassCard({
       initial={{ opacity: 0, y: 20 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
-      transition={transitions.smooth}
       whileHover={!prefersReducedMotion() ? { scale: 1.02, y: -4 } : {}}
       transition={transitions.spring}
     >

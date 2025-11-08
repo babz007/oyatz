@@ -91,7 +91,7 @@ export default function PremiumBookingCard() {
           transition={{ duration: 0.8, delay: 0.1 }}
           className="text-xl md:text-2xl text-white/90 mb-12 max-w-2xl mx-auto leading-relaxed"
         >
-          Ready to transform your look? Schedule a consultation with one of our expert stylists. We'll help you achieve the perfect style that reflects your unique personality.
+          Ready to transform your look? Schedule a consultation with one of our expert stylists. We&apos;ll help you achieve the perfect style that reflects your unique personality.
         </motion.p>
 
         <motion.div
