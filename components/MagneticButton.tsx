@@ -29,13 +29,14 @@ export default function MagneticButton({
   const ySpring = useSpring(y, springConfig);
 
   useEffect(() => {
-    const handleMouseMove = (e: MouseEvent) => {
+    const handleMouseMove = (e: Event) => {
       if (!ref.current || !isHovered) return;
+      const mouseEvent = e as MouseEvent;
       const rect = ref.current.getBoundingClientRect();
       const centerX = rect.left + rect.width / 2;
       const centerY = rect.top + rect.height / 2;
-      const distanceX = e.clientX - centerX;
-      const distanceY = e.clientY - centerY;
+      const distanceX = mouseEvent.clientX - centerX;
+      const distanceY = mouseEvent.clientY - centerY;
       x.set(distanceX * 0.15);
       y.set(distanceY * 0.15);
     };
