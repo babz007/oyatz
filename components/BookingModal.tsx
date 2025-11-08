@@ -129,24 +129,6 @@ export default function BookingModal({ isOpen, onClose }: BookingModalProps) {
         </html>
       `;
 
-      // Plain text version for email clients that don't support HTML
-      const emailBodyText = `
-NEW BOOKING REQUEST - OYATZ HAIR
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-Name: ${formData.name}
-Email: ${formData.email || 'Not provided'}
-Phone: ${formData.phone || 'Not provided'}
-Preferred Day: ${formData.day}
-Preferred Time: ${formData.time || 'Not specified'}
-Services Requested: ${formData.services.length > 0 ? formData.services.join(', ') : 'None selected'}
-Additional Information: ${formData.extraInfo || 'None provided'}
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-This booking request was submitted from the OYATZ Hair website.
-Please respond to confirm the appointment.
-      `;
-
       // Confirmation email for the customer
       const confirmationEmailHTML = `
         <html>
@@ -184,63 +166,83 @@ Please respond to confirm the appointment.
         </html>
       `;
 
-      // Try to use EmailJS if available, otherwise fallback to mailto
-      if (typeof window !== 'undefined' && (window as any).emailjs) {
-        try {
-          const emailjs = (window as any).emailjs;
-          
-          // Send email to business owner
-          await emailjs.send(
-            process.env.NEXT_PUBLIC_EMAILJS_SERVICE_ID || 'service_oyatz',
-            process.env.NEXT_PUBLIC_EMAILJS_BOOKING_TEMPLATE_ID || 'template_booking',
-            {
-              to_email: 'ainababs0@gmail.com',
-              to_name: 'OYATZ Hair',
-              from_name: formData.name,
-              from_email: formData.email || 'noreply@oyatz.com',
-              phone: formData.phone || 'Not provided',
-              day: formData.day,
-              time: formData.time || 'Not specified',
-              services: formData.services.join(', ') || 'None selected',
-              extra_info: formData.extraInfo || 'None provided',
-              message_html: emailBodyHTML,
-              message_text: emailBodyText,
-            }
-          );
-
-          // Send confirmation email to customer
-          if (formData.email) {
-            await emailjs.send(
-              process.env.NEXT_PUBLIC_EMAILJS_SERVICE_ID || 'service_oyatz',
-              process.env.NEXT_PUBLIC_EMAILJS_CONFIRMATION_TEMPLATE_ID || 'template_confirmation',
-              {
-                to_email: formData.email,
-                to_name: formData.name,
-                customer_name: formData.name,
-                day: formData.day,
-                time: formData.time || 'Not specified',
-                services: formData.services.join(', ') || 'None selected',
-                message_html: confirmationEmailHTML,
-              }
-            );
-          }
-
-          setSubmitStatus('success');
-        } catch (emailError) {
-          console.error('EmailJS error:', emailError);
-          // Fallback to mailto if EmailJS fails
-          const subject = encodeURIComponent('New Booking Request from OYATZ Hair Website');
-          const body = encodeURIComponent(emailBodyText);
-          window.location.href = `mailto:ainababs0@gmail.com?subject=${subject}&body=${body}`;
-          setSubmitStatus('success');
-        }
-      } else {
-        // Fallback to mailto if EmailJS is not set up
-        const subject = encodeURIComponent('New Booking Request from OYATZ Hair Website');
-        const body = encodeURIComponent(emailBodyText);
-        window.location.href = `mailto:ainababs0@gmail.com?subject=${subject}&body=${body}`;
-        setSubmitStatus('success');
+      // Use Web3Forms API for automatic email sending (free, unlimited, no setup required)
+      // Get your access key from https://web3forms.com (it's free!)
+      const accessKey = process.env.NEXT_PUBLIC_WEB3FORMS_ACCESS_KEY || '';
+      
+      if (!accessKey) {
+        // If Web3Forms is not set up, show helpful error
+        setSubmitStatus('error');
+        setIsSubmitting(false);
+        alert('Email service not configured. Please add NEXT_PUBLIC_WEB3FORMS_ACCESS_KEY to your environment variables. See lib/web3forms-setup.md for instructions.');
+        return;
       }
+
+      // Send booking request to business owner (ainababs0@gmail.com)
+      // Web3Forms sends to the email associated with the access key by default
+      const bookingResponse = await fetch('https://api.web3forms.com/submit', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+        },
+        body: JSON.stringify({
+          access_key: accessKey,
+          subject: `New Booking Request from ${formData.name} - OYATZ Hair`,
+          from_name: formData.name,
+          from_email: formData.email,
+          email: formData.email,
+          phone: formData.phone,
+          message: emailBodyHTML,
+          // Additional fields for structured data
+          'Name': formData.name,
+          'Email': formData.email,
+          'Phone': formData.phone,
+          'Preferred Day': formData.day,
+          'Preferred Time': formData.time || 'Not specified',
+          'Services Requested': formData.services.join(', ') || 'None selected',
+          'Additional Information': formData.extraInfo || 'None provided',
+        }),
+      });
+
+      const bookingResult = await bookingResponse.json();
+      
+      if (!bookingResponse.ok || !bookingResult.success) {
+        throw new Error(bookingResult.message || 'Failed to send booking request');
+      }
+
+      // Send confirmation email to customer
+      // Use the same access key but specify the customer's email as recipient
+      if (formData.email) {
+        const confirmationResponse = await fetch('https://api.web3forms.com/submit', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json',
+          },
+          body: JSON.stringify({
+            access_key: accessKey,
+            subject: 'Booking Request Received - OYATZ Hair',
+            to_email: formData.email, // Send to customer
+            from_name: 'OYATZ Hair',
+            from_email: 'ainababs0@gmail.com',
+            message: confirmationEmailHTML,
+            // Include customer details
+            'Customer Name': formData.name,
+            'Preferred Day': formData.day,
+            'Preferred Time': formData.time || 'Not specified',
+            'Services Requested': formData.services.join(', ') || 'None selected',
+          }),
+        });
+
+        const confirmationResult = await confirmationResponse.json();
+        // Don't fail if confirmation email fails, but log it
+        if (!confirmationResponse.ok || !confirmationResult.success) {
+          console.warn('Confirmation email failed:', confirmationResult.message);
+        }
+      }
+
+      setSubmitStatus('success');
       
       setTimeout(() => {
         onClose();
@@ -499,7 +501,8 @@ Please respond to confirm the appointment.
                   
                   {submitStatus === 'error' && (
                     <p className="mt-2 text-red-300 text-sm text-center">
-                      Error sending request. Please try again or call directly.
+                      Error sending request. Please try again or call directly at{' '}
+                      <a href="tel:+1234567890" className="underline hover:text-red-200">(123) 456-7890</a>
                     </p>
                   )}
                   

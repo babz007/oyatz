@@ -35,6 +35,7 @@ jobs:
         run: npm run build
         env:
           GITHUB_PAGES_BASE_PATH: /oyatz
+          NEXT_PUBLIC_WEB3FORMS_ACCESS_KEY: ${{ secrets.NEXT_PUBLIC_WEB3FORMS_ACCESS_KEY }}
 
       - name: Setup Pages
         uses: actions/configure-pages@v4
