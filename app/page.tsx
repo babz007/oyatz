@@ -1,5 +1,6 @@
 'use client';
 
+import { useEffect, useState } from 'react';
 import Image from 'next/image';
 import { motion } from 'framer-motion';
 import Header from '@/components/Header';
@@ -100,6 +101,23 @@ const galleryImages = [
 
 
 export default function Home() {
+  const [basePath, setBasePath] = useState('');
+  const videoPath = basePath ? `${basePath}/assets/7507183-hd_1920_1080_25fps.mp4` : '/assets/7507183-hd_1920_1080_25fps.mp4';
+
+  useEffect(() => {
+    // Detect basePath from current location
+    const pathname = window.location.pathname;
+    if (pathname.startsWith('/oyatz')) {
+      setBasePath('/oyatz');
+    }
+  }, []);
+
+  // Update gallery images with basePath
+  const galleryImagesWithBasePath = galleryImages.map(img => ({
+    ...img,
+    src: basePath ? `${basePath}${img.src}` : img.src,
+  }));
+
   const handleDownload = () => {
     const json = generateColorTokensJSON();
     const blob = new Blob([json], { type: 'application/json' });
@@ -125,7 +143,7 @@ export default function Home() {
           className="absolute inset-0 w-full h-full object-cover"
           aria-label="Hair braiding background video"
         >
-          <source src="/assets/7507183-hd_1920_1080_25fps.mp4" type="video/mp4" />
+          <source src={videoPath} type="video/mp4" />
         </video>
         {/* Subtle overlay for content readability */}
         <div className="absolute inset-0 bg-brand-50/40 backdrop-blur-[1px]" />
@@ -137,7 +155,7 @@ export default function Home() {
 
         {/* Hero Section - Apple-Level Liquid Glass */}
         <section id="hero">
-          <HeroLiquidGlass videoSrc="/assets/7507183-hd_1920_1080_25fps.mp4" />
+          <HeroLiquidGlass videoSrc={videoPath} />
         </section>
 
       {/* Text Marquee Divider */}
@@ -160,7 +178,7 @@ export default function Home() {
               key={card.title}
               title={card.title}
               description={card.description}
-              image={galleryImages[index]?.src}
+              image={galleryImagesWithBasePath[index]?.src || galleryImages[index]?.src}
               imageAlt={galleryImages[index]?.alt || card.title}
               index={index}
             />
@@ -192,7 +210,7 @@ export default function Home() {
             className="relative aspect-[4/3] rounded-[20px] sm:rounded-[24px] md:rounded-[28px] lg:rounded-[32px] overflow-hidden shadow-apple-xl group mt-8 md:mt-0"
           >
             <ParallaxImage
-              src="/assets/pexels-cottonbro-5052869.jpg"
+              src={basePath ? `${basePath}/assets/pexels-cottonbro-5052869.jpg` : "/assets/pexels-cottonbro-5052869.jpg"}
               alt="Professional hairstylist working in modern salon setting"
               speed={0.15}
             />
@@ -225,7 +243,7 @@ export default function Home() {
           title={gallery.title}
           subtitle={gallery.subtitle}
         />
-        <MasonryGallery images={galleryImages} />
+        <MasonryGallery images={galleryImagesWithBasePath} />
       </SectionWrapper>
 
       {/* Booking Section - Redesigned */}
