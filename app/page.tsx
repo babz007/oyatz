@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import Image from 'next/image';
 import { motion } from 'framer-motion';
 import Header from '@/components/Header';
@@ -102,13 +102,24 @@ const galleryImages = [
 
 export default function Home() {
   const [basePath, setBasePath] = useState('');
-  const videoPath = basePath ? `${basePath}/assets/7507183-hd_1920_1080_25fps.mp4` : '/assets/7507183-hd_1920_1080_25fps.mp4';
+  const [videoPath, setVideoPath] = useState('/assets/7507183-hd_1920_1080_25fps.mp4');
+  const videoRef = useRef<HTMLVideoElement>(null);
 
   useEffect(() => {
     // Detect basePath from current location
     const pathname = window.location.pathname;
-    if (pathname.startsWith('/oyatz')) {
-      setBasePath('/oyatz');
+    const detectedBasePath = pathname.startsWith('/oyatz') ? '/oyatz' : '';
+    setBasePath(detectedBasePath);
+    const newVideoPath = detectedBasePath ? `${detectedBasePath}/assets/7507183-hd_1920_1080_25fps.mp4` : '/assets/7507183-hd_1920_1080_25fps.mp4';
+    setVideoPath(newVideoPath);
+    
+    // Update video source directly
+    if (videoRef.current) {
+      const source = videoRef.current.querySelector('source');
+      if (source) {
+        source.src = newVideoPath;
+        videoRef.current.load();
+      }
     }
   }, []);
 
@@ -136,12 +147,17 @@ export default function Home() {
       {/* Fixed video background for entire site */}
       <div className="fixed inset-0 z-0 overflow-hidden">
         <video
+          ref={videoRef}
+          key={videoPath}
           autoPlay
           loop
           muted
           playsInline
           className="absolute inset-0 w-full h-full object-cover"
           aria-label="Hair braiding background video"
+          onError={(e) => {
+            console.error('Video load error:', e);
+          }}
         >
           <source src={videoPath} type="video/mp4" />
         </video>
