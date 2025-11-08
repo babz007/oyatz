@@ -28,6 +28,7 @@ import SectionHeader from '@/components/SectionHeader';
 import FeatureCard from '@/components/FeatureCard';
 import CTABand from '@/components/CTABand';
 import LocationSection from '@/components/LocationSection';
+import BookingModal from '@/components/BookingModal';
 import { generateColorTokensJSON } from '@/lib/palette';
 import { story, gallery, booking, faq } from '@/lib/copy';
 import { ASSETS, getAssetPath as getAssetPathUtil } from '@/lib/assets';
@@ -105,6 +106,7 @@ export default function Home() {
   const [basePath, setBasePath] = useState('');
   const [videoPath, setVideoPath] = useState<string>(ASSETS.backgroundVideo);
   const videoRef = useRef<HTMLVideoElement>(null);
+  const [isBookingModalOpen, setIsBookingModalOpen] = useState(false);
 
   useEffect(() => {
     // Detect basePath from current location
@@ -275,8 +277,14 @@ export default function Home() {
         }}
         secondaryCTA={{
           label: booking.secondaryCTA,
-          onClick: () => alert('Online booking coming soon!'),
+          onClick: () => setIsBookingModalOpen(true),
         }}
+      />
+
+      {/* Booking Modal */}
+      <BookingModal
+        isOpen={isBookingModalOpen}
+        onClose={() => setIsBookingModalOpen(false)}
       />
 
       {/* Location Section */}
