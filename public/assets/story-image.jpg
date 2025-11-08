@@ -1,0 +1,13 @@
+<svg width="800" height="600" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="storyGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#e8a8a0"/>
+      <stop offset="50%" style="stop-color:#f38f80"/>
+      <stop offset="100%" style="stop-color:#d8756a"/>
+    </linearGradient>
+  </defs>
+  <rect width="800" height="600" fill="#f6f7f9"/>
+  <rect x="150" y="100" width="500" height="400" rx="20" fill="url(#storyGrad)" opacity="0.7"/>
+  <circle cx="400" cy="300" r="120" fill="#fbd5cf" opacity="0.8"/>
+  <text x="400" y="550" font-family="Arial" font-size="16" fill="#666" text-anchor="middle">Professional Stylist</text>
+</svg>
