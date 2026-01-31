@@ -23,7 +23,6 @@ interface BookingModalProps {
 
 const SERVICE_TYPES = [
   'Braids',
-  'Colored Braids',
   'Twists',
   'Locks',
   'Retwists',

@@ -179,7 +179,7 @@ export default function Home() {
 
       {/* Text Marquee Divider */}
       <div className="py-6 sm:py-8 md:py-10 bg-brand-50/30 backdrop-blur-sm overflow-hidden">
-        <TextMarquee text="Braids • Twists • Locs • Weaving • Retwisting • Colored Braids • Natural Hair • Styling • Extensions • Consultations" direction="right" speed={2} opacity={0.2} />
+        <TextMarquee text="Braids • Twists • Locs • Weaving • Retwisting • Natural Hair • Styling • Extensions • Consultations" direction="right" speed={2} opacity={0.2} />
       </div>
 
       {/* Story Section - Redesigned with centralized copy */}
@@ -251,7 +251,7 @@ export default function Home() {
 
       {/* Text Marquee Section */}
       <div className="py-6 sm:py-8 md:py-10 bg-brand-50/30 backdrop-blur-sm overflow-hidden">
-        <TextMarquee text="Braids • Twists • Locs • Weaving • Retwisting • Colored Braids • Natural Hair • Styling • Extensions • Consultations" direction="left" speed={2} opacity={0.2} />
+        <TextMarquee text="Braids • Twists • Locs • Weaving • Retwisting • Natural Hair • Styling • Extensions • Consultations" direction="left" speed={2} opacity={0.2} />
       </div>
 
 

@@ -12,10 +12,6 @@ export const story = {
       description: 'Professional braiding services for all hair types. From classic styles to intricate designs, I create beautiful, long-lasting braids.',
     },
     {
-      title: 'Coloured Braids',
-      description: 'Add vibrant color to your braids with my professional coloring techniques. Express your unique style with custom color combinations.',
-    },
-    {
       title: 'Locks',
       description: 'Expert lock installation and maintenance. I help you start and maintain healthy, beautiful locks with professional care.',
     },
@@ -65,7 +61,7 @@ export const faq = {
     {
       id: '1',
       question: 'What services do you offer?',
-      answer: 'I specialize in braids, colored braids, locks, retwists, and general hair styling. I work with all hair types and stay current with the latest techniques and trends in natural hair care.',
+      answer: 'I specialize in braids, locks, retwists, and general hair styling. I work with all hair types and stay current with the latest techniques and trends in natural hair care.',
     },
     {
       id: '2',
@@ -80,7 +76,7 @@ export const faq = {
     {
       id: '4',
       question: 'How long do services typically take?',
-      answer: 'Service times vary based on the style and your hair length. Braids can take 3-6 hours depending on the complexity, retwists typically take 1-2 hours, and lock installation can take 4-8 hours. I\'ll provide an accurate time estimate during your consultation.',
+      answer: 'Service times vary based on the style and your hair length. Braids can take 4-7 hours depending on the complexity and sizes(small, medium, large), retwists typically take 2-4 hours, and lock installation can take 5-10 hours. I will provide an accurate time estimate during your consultation.',
     },
     {
       id: '5',
